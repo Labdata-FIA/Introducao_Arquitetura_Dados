@@ -5,4 +5,4 @@ pandas
 numpy
 pyarrow
 deltalake
-duckdb==1.2.1
+duckdb

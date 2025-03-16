@@ -12,7 +12,7 @@
 
 ## Kafka Connect
 
-![Exemplo Kafka Conect](content/kafka-connect-minio_c.png)
+![Exemplo Kafka Conect](content/arquitetura.png)
 
 
 
@@ -25,7 +25,7 @@ Criando a imagem junto com o plugin do Debezium Postgres
 
 
 ```bash
-docker image build -t <<usuario>>/kafka-connet-fia-verao:1.0.1  -f Dockerfile . 
+docker image build -t <<usuario>>/kafka-connet-fia:1.0.1  -f Dockerfile . 
 ```
 
 Imagem criada? ...mas antes
@@ -33,7 +33,7 @@ Imagem criada? ...mas antes
 Altere o arquivo `docker-compose.yaml` da imagem criada no serviço `connect`
 
 ```bash
-docker-compose up -d zookeeper kafka-broker akhq connect postgres pgadmin minio mc
+docker-compose up -d zookeeper kafka-broker connect postgres pgadmin minio
 
 docker container ls
 ```
@@ -57,7 +57,7 @@ SHOW wal_level;
 SHOW max_replication_slots;
 ```
 
-### Provisionando Banco de dados Postgres e a ferramenta PgAdmin
+### Provisionando Banco de dados PostgreSql e a ferramenta PgAdmin
 
 
 Acesso para o PgAdmin http://localhost:5433/
@@ -234,39 +234,57 @@ INSERT INTO inventory.products(	id, name, description, weight)
 VALUES (112, 'Lapis', 'O melhor', 1);
 ```
 
-Listando os tópicos
+## Enviando informações para a camada Silver
+
+ --colocar alguma coisa sobre o duckdb
+
+### Subindo o ambiente do Jypyter
 
 ```bash
-docker exec -it kafka-broker /bin/bash
-kafka-topics --bootstrap-server localhost:9092 --list 
-```
-
-*Consumindo mensagem sink-products Datasource MinIO*
-
-```bash
-kafka-console-consumer --bootstrap-server localhost:9092 --topic sink-products --from-beginning
-```
-
-
-## Consumindo mensagens pelo Python
-
-### Gerar a imagem para o consumidor
-
-
-```bash
-docker build -t kafka-minio-consumer ./app-python
-
-docker compose up -d kafka-minio-consumer
+docker compose up -d jupyter_service
 
 ```
 
-### Gerando comando insert na tabela
+> [!IMPORTANT]
+> Olhe os logs para pegar o endereço do Jupyter
+
+## Abra o arquivo `ingest_silver.ipynb` que está dentro da pasta
+
+
+### Para acessar a linha de comando do duckdb
+
+
+### Algumas query para ingestão para a camada Gold
 
 ```sql
-INSERT INTO inventory.products(	id, name, description, weight)
-VALUES (default, 'Lapis', 'O melhor', 1);
-```
+-- Filtrar dados de 2025
+CREATE OR REPLACE TABLE gold_products_2025 AS
+SELECT 
+    id,
+    name,
+    description,
+    weight,
+    time,
+    hour,
+    month,
+    year
+FROM silver_table
+WHERE year = 2025
+ORDER BY time DESC;
 
-```bash
-docker logs kafka-minio-consumer
-```"# Introducao_Arquitetura_Dados" 
+
+CREATE OR REPLACE TABLE gold_product_ranking AS
+SELECT 
+    id,
+    name,
+    description,
+    weight,
+    time,
+    hour,
+    month,
+    year,
+    RANK() OVER (PARTITION BY month, year ORDER BY weight DESC) AS weight_rank
+FROM silver_table
+ORDER BY year, month, weight_rank;
+
+```
