@@ -251,9 +251,6 @@ docker compose up -d jupyter_service
 ## Abra o arquivo `ingest_silver.ipynb` que está dentro da pasta
 
 
-### Para acessar a linha de comando do duckdb
-
-
 ### Algumas query para ingestão para a camada Gold
 
 ```sql
