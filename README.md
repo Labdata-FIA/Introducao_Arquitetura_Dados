@@ -234,9 +234,16 @@ INSERT INTO inventory.products(	id, name, description, weight)
 VALUES (112, 'Lapis', 'O melhor', 1);
 ```
 
-## Enviando informações para a camada Silver
+## Enviando informações para a camada Silver com o Duckdb
 
- --colocar alguma coisa sobre o duckdb
+### Introdução ao DuckDB
+O DuckDB é um banco de dados analítico em colunas, projetado para processamento eficiente de consultas SQL diretamente na memória. Diferente de bancos de dados transacionais tradicionais, como PostgreSQL e MySQL, o DuckDB é otimizado para cargas analíticas, tornando-se uma excelente opção para análise de dados em notebooks, pipelines de dados e aplicações embarcadas.
+
+#### Principais Características
+Processamento colunar: Otimizado para consultas analíticas rápidas.
+Sem necessidade de servidor: Funciona como uma biblioteca embutida, similar ao SQLite, eliminando a necessidade de um servidor dedicado.
+Integração com Python e Pandas: Permite rodar consultas diretamente sobre DataFrames do Pandas e arquivos Parquet.
+Suporte a grandes volumes de dados: Apesar de ser leve, consegue lidar com grandes conjuntos de dados de maneira eficiente.
 
 ### Subindo o ambiente do Jypyter
 
